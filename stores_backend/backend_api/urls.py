@@ -1,7 +1,10 @@
-from django.urls import path
-from .views import StoreListAPIView
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import StoresViewSet
 
+router = DefaultRouter()
+router.register(r'stores', StoresViewSet)
 
 urlpatterns = [
-    path('Stores/', StoreListAPIView.as_view(), name='store-list')
+    path('', include(router.urls)),
 ]
