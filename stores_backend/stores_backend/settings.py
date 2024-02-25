@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'rest_framework_swagger',
     'corsheaders',
     'django_filters',
+    'drf_yasg',
     'backend_api'
 ]
 
