@@ -1,7 +1,6 @@
-from rest_framework import viewsets, filters, mixins, status
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from rest_framework import viewsets, filters, mixins
 from django_filters.rest_framework import DjangoFilterBackend
+
 from .models import Store, Product
 from .serializers import StoresSerializer, ProductSerializer
 
@@ -20,16 +19,30 @@ class StoresViewSet(
     search_fields = ['name', 'address', '=floor_area']
 
 
-class StoreProductsViewSet(viewsets.ModelViewSet):
+class StoreProductsViewSet(
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet
+):
     serializer_class = ProductSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend]
+    search_fields = ['name', '=price', 'specs', '=rating', 'supplier_info', 'made_in', 'production_company_name']
+    ordering_fields = ['name', 'price', 'specs', 'rating', 'supplier_info', 'made_in', 'production_company_name']
+    filterset_fields = ['status']
 
     def get_queryset(self):
         store_id = self.kwargs['store_id']
-        return Product.objects.filter(store_id=store_id)
+        queryset = Product.objects.select_related('store').filter(store_id=store_id)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(store_id=self.kwargs['store_id'])
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return queryset
+
+
+class ProductsViewSet(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet
+):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer

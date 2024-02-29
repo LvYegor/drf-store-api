@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'drf_yasg',
+    'debug_toolbar',
     'backend_api'
 ]
 
@@ -42,6 +43,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -51,6 +53,10 @@ CORS_ORIGIN_WHITELIST = [
     'http://127.0.0.1:8080',
     'http://127.0.0.1:8000',
     'http://127.0.0.1:3000',
+]
+
+INTERNAL_IPS = [
+    "127.0.0.1",
 ]
 
 ROOT_URLCONF = 'stores_backend.urls'
