@@ -1,8 +1,8 @@
 from rest_framework import viewsets, filters, mixins
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Store, Product
-from .serializers import StoresSerializer, ProductSerializer
+from .models import Store, Product, ProductComment
+from .serializers import StoresSerializer, ProductSerializer, CommentSerializer
 
 
 class StoresViewSet(
@@ -46,3 +46,25 @@ class ProductsViewSet(
 ):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+
+class ProductCommentsViewSet(
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet
+):
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        product_id = self.kwargs['product_id']
+        queryset = ProductComment.objects.select_related('product').filter(product_id=product_id)
+
+        return queryset
+
+
+class CommentsViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet
+):
+    queryset = ProductComment.objects.all()
+    serializer_class = CommentSerializer
